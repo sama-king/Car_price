@@ -59,12 +59,14 @@ class PricePredictor:
             }
         )
 
-        # Match notebook filtering and cleaning.
+        # Clean and convert 'levy' column to numeric, treating '-' as 0.
         df["levy"] = df["levy"].replace("-", 0)
         df["levy"] = pd.to_numeric(df["levy"], errors="coerce")
 
+        # Filter out outlier price and levy values.
         df = df[(df["price"] > 100) & (df["price"] < 600000) & (df["levy"] > 0)]
 
+        # Clean and convert 'mileage' column to numeric by removing 'km' and commas.
         df["mileage"] = (
             df["mileage"]
             .astype(str)
@@ -74,6 +76,7 @@ class PricePredictor:
         )
         df["mileage"] = pd.to_numeric(df["mileage"], errors="coerce")
 
+        # Clean and convert 'engine_volume' column to numeric by removing 'Turbo' and any non-numeric characters.
         df["engine_volume"] = (
             df["engine_volume"]
             .astype(str)
@@ -82,6 +85,7 @@ class PricePredictor:
         )
         df["engine_volume"] = pd.to_numeric(df["engine_volume"], errors="coerce")
 
+        # Create mappings for 'manufacturer' based on median price to preserve ordinal relationships.
         manufacturer_sorted = (
             df.groupby("manufacturer")["price"]
             .median()
@@ -92,7 +96,17 @@ class PricePredictor:
         self.manufacturer_map = {
             name: code for code, name in enumerate(manufacturer_sorted, start=1)
         }
+        
+        # Create mappings for 'category' based on median price to preserve ordinal relationships.
+        category_sorted = (
+            df.groupby('category')['price']
+            .median()
+            .sort_values()
+            .index
+        )
+        self.category_map = {name: code for code, name in enumerate(category_sorted, start=1)}
 
+        # Create mappings for 'fuel' based on median price to preserve ordinal relationships.
         fuel_sorted = (
             df.groupby("fuel")["price"]
             .median()
@@ -102,17 +116,22 @@ class PricePredictor:
         )
         self.fuel_map = {name: code for code, name in enumerate(fuel_sorted, start=1)}
 
+        # Create mappings for 'gear_type' 
+        self.gear_type_map = {v: i for i, v in enumerate(sorted(df['gear_type'].dropna().unique()))}
+        
+        df['gear_type'] = df['gear_type'].map(self.gear_type_map)
         df["manufacturer"] = df["manufacturer"].map(self.manufacturer_map)
+        df['category'] = df['category'].map(self.category_map)
         df["fuel"] = df["fuel"].map(self.fuel_map)
 
-        X = df[FEATURE_COLUMNS].copy()
+        x = df[FEATURE_COLUMNS].copy()
         y = df["price"].copy()
 
-        model_df = pd.concat([X, y], axis=1).dropna()
-        X = model_df[FEATURE_COLUMNS]
+        model_df = pd.concat([x, y], axis=1).dropna()
+        x = model_df[FEATURE_COLUMNS]
         y = model_df["price"]
 
-        self.model.fit(X, y)
+        self.model.fit(x, y)
 
         self.manufacturer_choices = manufacturer_sorted
         self.fuel_choices = fuel_sorted
