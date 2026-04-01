@@ -21,7 +21,6 @@ FEATURE_COLUMNS = [
     "mileage",
     "cylinders",
     "category",
-    "gear_type",
 ]
 
 
@@ -141,6 +140,7 @@ class PricePredictor:
     def predict(self, payload: dict[str, str]) -> float:
         manufacturer_code = self.manufacturer_map[payload["manufacturer"]]
         fuel_code = self.fuel_map[payload["fuel"]]
+        category_code = self.category_map[payload["category"]]
 
         row = pd.DataFrame(
             [
@@ -152,6 +152,7 @@ class PricePredictor:
                     "engine_volume": float(payload["engine_volume"]),
                     "mileage": float(payload["mileage"]),
                     "cylinders": float(payload["cylinders"]),
+                    "category": float(category_code)
                 }
             ]
         )
