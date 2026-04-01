@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,12 +21,13 @@ FEATURE_COLUMNS = [
     "mileage",
     "cylinders",
     "category",
+    "gear_type",
 ]
 
 
 class PricePredictor:
     def __init__(self) -> None:
-        self.model = LinearRegression()
+        self.model = RandomForestRegressor(random_state=71, n_estimators=101)
         self.manufacturer_map: dict[str, int] = {}
         self.fuel_map: dict[str, int] = {}
         self.manufacturer_choices: list[str] = []
@@ -64,7 +66,7 @@ class PricePredictor:
         df["levy"] = pd.to_numeric(df["levy"], errors="coerce")
 
         # Filter out outlier price and levy values.
-        df = df[(df["price"] > 100) & (df["price"] < 600000) & (df["levy"] > 0)]
+        df = df[(df["price"] > 100) & (df["price"] < 600000)]
 
         # Clean and convert 'mileage' column to numeric by removing 'km' and commas.
         df["mileage"] = (
