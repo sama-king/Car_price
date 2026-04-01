@@ -36,6 +36,14 @@
         </label>
 
         <label>
+          Category
+          <select name="category" required>
+            {% for c in categories %}
+              <option value="{{ c }}" {% if form_values['category'] == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+
+        <label>
           Fuel Type
           <select name="fuel" required>
             {% for f in fuels %}

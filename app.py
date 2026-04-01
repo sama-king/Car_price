@@ -31,6 +31,7 @@ class PricePredictor:
         self.fuel_map: dict[str, int] = {}
         self.manufacturer_choices: list[str] = []
         self.fuel_choices: list[str] = []
+        self.category_choices: list[str] = []
         self._fit()
 
     def _fit(self) -> None:
@@ -127,16 +128,12 @@ class PricePredictor:
 
         x = df[FEATURE_COLUMNS].copy()
         y = df["price"].copy()
-
-        model_df = pd.concat([x, y], axis=1).dropna()
-        x = model_df[FEATURE_COLUMNS]
-        y = model_df["price"]
-
         self.model.fit(x, y)
 
         self.manufacturer_choices = manufacturer_sorted
         self.fuel_choices = fuel_sorted
-
+        self.category_choices = category_sorted
+        
     def predict(self, payload: dict[str, str]) -> float:
         manufacturer_code = self.manufacturer_map[payload["manufacturer"]]
         fuel_code = self.fuel_map[payload["fuel"]]
@@ -178,6 +175,7 @@ def index():
         "engine_volume": "2.0",
         "mileage": "80000",
         "cylinders": "4",
+        "category": predictor.category_choices[0],
     }
 
     form_values = default_values.copy()
@@ -200,6 +198,7 @@ def index():
         form_values=form_values,
         manufacturers=predictor.manufacturer_choices,
         fuels=predictor.fuel_choices,
+        categories=predictor.category_choices,
     )
 
 
