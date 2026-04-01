@@ -181,10 +181,14 @@ def index():
 
     if request.method == "POST":
         form_values.update({k: request.form.get(k, "").strip() for k in default_values})
+        
         try:
             prediction = predictor.predict(form_values)
-        except (ValueError, KeyError):
+        except Exception as exc:
+            app.logger.exception("Prediction failed with payload=%s", form_values)
             error = "Please enter valid values for all fields."
+            if app.debug:
+                error = f"{error} Debug: {exc}"
 
     return render_template(
         "index.html",
