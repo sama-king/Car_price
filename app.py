@@ -170,12 +170,12 @@ def index():
     default_values = {
         "year": "2020",
         "levy": "1000",
-        "manufacturer": predictor.manufacturer_choices[0],
-        "fuel": predictor.fuel_choices[25],
+        "manufacturer": predictor.manufacturer_choices[25],
+        "fuel": predictor.fuel_choices[1],
         "engine_volume": "2.0",
         "mileage": "80000",
         "cylinders": "6",
-        "category": predictor.category_choices[0],
+        "category": predictor.category_choices[4],
     }
 
     form_values = default_values.copy()
