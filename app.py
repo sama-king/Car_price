@@ -171,9 +171,9 @@ def index():
         "year": "2020",
         "levy": "1000",
         "manufacturer": predictor.manufacturer_choices[25],
-        "fuel": predictor.fuel_choices[1],
+        "fuel": predictor.fuel_choices[3],
         "engine_volume": "2.0",
-        "mileage": "80000",
+        "mileage": "10000",
         "cylinders": "6",
         "category": predictor.category_choices[4],
     }
