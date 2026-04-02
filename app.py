@@ -168,13 +168,13 @@ def index():
     error = None
 
     default_values = {
-        "year": "2015",
+        "year": "2020",
         "levy": "1000",
         "manufacturer": predictor.manufacturer_choices[0],
-        "fuel": predictor.fuel_choices[0],
+        "fuel": predictor.fuel_choices[25],
         "engine_volume": "2.0",
         "mileage": "80000",
-        "cylinders": "4",
+        "cylinders": "6",
         "category": predictor.category_choices[0],
     }
 
